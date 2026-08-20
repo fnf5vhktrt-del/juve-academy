@@ -11,7 +11,7 @@
     button { background: #e2b93b; color: #000; border: none; padding: 12px 24px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 95%; margin-top: 10px; font-size: 16px; }
     .hidden { display: none; }
     .badge { background: #1b4332; color: #2ec4b6; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
-    .list-item { background: #2a2a2a; padding: 10px; border-radius: 8px; margin: 8px 0; text-align: right; display: flex; justify-content: space-between; align-items: center; }
+    .list-item { background: #2a2a2a; padding: 12px; border-radius: 8px; margin: 8px 0; text-align: right; display: flex; justify-content: space-between; align-items: center; }
   </style>
 </head>
 <body>
@@ -54,6 +54,9 @@
     <div style="margin-top: 20px; text-align: right;">
       <h4>اللاعبين المسجلين:</h4>
       <div id="playersList"></div>
+
+      <h4 style="margin-top: 15px;">المدربين المسجلين:</h4>
+      <div id="coachesList"></div>
     </div>
 
     <br>
@@ -74,8 +77,8 @@
     <h2>أكاديمية اليوفي ⚽</h2>
     <div style="background: #113825; padding: 15px; border-radius: 12px; margin: 10px 0;">
       <span class="badge">اشتراكك فعال</span>
-      <h3 id="playerWelcome">مرحباً بك 👋</h3>
-      <p id="playerDaysDisplay">المتبقي: 30 يوم</p>
+      <h3>مرحباً بك 👋</h3>
+      <p>المتبقي: 30 يوم</p>
     </div>
     <button style="background: #007aff; color:#fff;">تجديد الاشتراك عبر Apple Pay </button>
     <br><br>
@@ -83,7 +86,8 @@
   </div>
 
   <script>
-    let players = [];
+    let players = JSON.parse(localStorage.getItem('juve_players')) || [];
+    let coaches = JSON.parse(localStorage.parse(localStorage.getItem('juve_coaches')) || [];
 
     function login() {
       const user = document.getElementById('username').value.trim().toLowerCase();
@@ -91,6 +95,7 @@
 
       if((user === 'admin' || user === 'abo shaad') && pass === '123') {
         showView('adminView');
+        renderLists();
       } else if(user === 'coach' && pass === '123') {
         showView('coachView');
       } else if(user === 'player' && pass === '123') {
@@ -126,7 +131,8 @@
       }
 
       players.push({ name, phone, days });
-      renderPlayers();
+      localStorage.setItem('juve_players', JSON.stringify(players));
+      renderLists();
       alert('تمت إضافة اللاعب بنجاح!');
 
       document.getElementById('pName').value = '';
@@ -136,15 +142,36 @@
     }
 
     function addCoach() {
+      const name = document.getElementById('cName').value;
+      const user = document.getElementById('cUser').value;
+
+      if(!name || !user) {
+        alert('يرجى تعبئة بيانات المدرب');
+        return;
+      }
+
+      coaches.push({ name, user });
+      localStorage.setItem('juve_coaches', JSON.stringify(coaches));
+      renderLists();
       alert('تمت إضافة المدرب بنجاح!');
+
+      document.getElementById('cName').value = '';
+      document.getElementById('cUser').value = '';
+      document.getElementById('cPass').value = '';
       document.getElementById('coachForm').classList.add('hidden');
     }
 
-    function renderPlayers() {
-      const list = document.getElementById('playersList');
-      list.innerHTML = '';
+    function renderLists() {
+      const pList = document.getElementById('playersList');
+      pList.innerHTML = players.length === 0 ? '<p style="color:#666; font-size:12px;">لا يوجد لاعبين</p>' : '';
       players.forEach(p => {
-        list.innerHTML += `<div class="list-item"><span>🏃‍♂️ ${p.name}</span> <span class="badge">${p.days} يوم</span></div>`;
+        pList.innerHTML += `<div class="list-item"><span>🏃‍♂️ ${p.name}</span> <span class="badge">${p.days} يوم</span></div>`;
+      });
+
+      const cList = document.getElementById('coachesList');
+      cList.innerHTML = coaches.length === 0 ? '<p style="color:#666; font-size:12px;">لا يوجد مدربين</p>' : '';
+      coaches.forEach(c => {
+        cList.innerHTML += `<div class="list-item"><span>📋 الكابتن / ${c.name}</span> <span class="badge" style="background:#264653;">مدرب</span></div>`;
       });
     }
 

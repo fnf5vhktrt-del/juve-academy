@@ -6,11 +6,12 @@
   <title>أكاديمية اليوفي</title>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; background: #121212; color: #fff; margin: 0; padding: 20px; text-align: center; }
-    .card { background: #1e1e1e; border-radius: 16px; padding: 20px; margin: 20px auto; border: 1px solid #333; max-width: 400px; }
-    input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #222; color: #fff; text-align: center; font-size: 15px; }
+    .card { background: #1e1e1e; border-radius: 16px; padding: 20px; margin: 15px auto; border: 1px solid #333; max-width: 400px; }
+    input, select { width: 90%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #222; color: #fff; text-align: center; font-size: 15px; box-sizing: border-box; }
     button { background: #e2b93b; color: #000; border: none; padding: 12px 24px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 95%; margin-top: 10px; font-size: 16px; }
     .hidden { display: none; }
     .badge { background: #1b4332; color: #2ec4b6; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+    .list-item { background: #2a2a2a; padding: 10px; border-radius: 8px; margin: 8px 0; text-align: right; display: flex; justify-content: space-between; align-items: center; }
   </style>
 </head>
 <body>
@@ -24,14 +25,38 @@
     <button onclick="login()">دخول</button>
   </div>
 
-  <!-- لوحة الأدمن (الأدمن) -->
+  <!-- لوحة التحكم (الأدمن) -->
   <div id="adminView" class="card hidden">
     <h2>لوحة التحكم الأعلى (الأدمن) 👑</h2>
-    <p>مرحباً بكِ! هذه الشاشة خاصة بكِ لإدارة الأكاديمية.</p>
-    <button style="background: #2a9d8f; color:#fff;">+ إضافة لاعب جديد</button>
-    <button style="background: #e76f51; color:#fff;">+ إضافة مدرب جديد</button>
-    <button style="background: #264653; color:#fff;">التقارير المالية والاشتراكات</button>
-    <br><br>
+    <p>إدارة الأكاديمية والاشتراكات</p>
+    <button onclick="showForm('playerForm')" style="background: #2a9d8f; color:#fff;">+ إضافة لاعب جديد</button>
+    <button onclick="showForm('coachForm')" style="background: #e76f51; color:#fff;">+ إضافة مدرب جديد</button>
+    
+    <!-- نموذج إضافة لاعب -->
+    <div id="playerForm" class="hidden" style="margin-top: 15px; border-top: 1px solid #444; padding-top: 15px;">
+      <h3>إضافة لاعب جديد</h3>
+      <input type="text" id="pName" placeholder="اسم اللاعب">
+      <input type="tel" id="pPhone" placeholder="رقم الجوال">
+      <input type="number" id="pDays" placeholder="مدة الاشتراك (بالأيام)">
+      <button onclick="addPlayer()" style="background: #2ec4b6; color:#000;">حفظ اللاعب</button>
+    </div>
+
+    <!-- نموذج إضافة مدرب -->
+    <div id="coachForm" class="hidden" style="margin-top: 15px; border-top: 1px solid #444; padding-top: 15px;">
+      <h3>إضافة مدرب جديد</h3>
+      <input type="text" id="cName" placeholder="اسم المدرب">
+      <input type="text" id="cUser" placeholder="اسم المستخدم للمدرب">
+      <input type="password" id="cPass" placeholder="كلمة المرور">
+      <button onclick="addCoach()" style="background: #f4a261; color:#000;">حفظ المدرب</button>
+    </div>
+
+    <!-- قائمة المسجلين -->
+    <div style="margin-top: 20px; text-align: right;">
+      <h4>اللاعبين المسجلين:</h4>
+      <div id="playersList"></div>
+    </div>
+
+    <br>
     <button onclick="logout()" style="background:#444; color:#fff;">تسجيل الخروج</button>
   </div>
 
@@ -49,8 +74,8 @@
     <h2>أكاديمية اليوفي ⚽</h2>
     <div style="background: #113825; padding: 15px; border-radius: 12px; margin: 10px 0;">
       <span class="badge">اشتراكك فعال</span>
-      <h3>مرحباً بك 👋</h3>
-      <p>المتبقي: 30 يوم</p>
+      <h3 id="playerWelcome">مرحباً بك 👋</h3>
+      <p id="playerDaysDisplay">المتبقي: 30 يوم</p>
     </div>
     <button style="background: #007aff; color:#fff;">تجديد الاشتراك عبر Apple Pay </button>
     <br><br>
@@ -58,6 +83,8 @@
   </div>
 
   <script>
+    let players = [];
+
     function login() {
       const user = document.getElementById('username').value.trim().toLowerCase();
       const pass = document.getElementById('password').value.trim();
@@ -80,6 +107,45 @@
       document.getElementById('playerView').classList.add('hidden');
 
       document.getElementById(viewId).classList.remove('hidden');
+    }
+
+    function showForm(formId) {
+      document.getElementById('playerForm').classList.add('hidden');
+      document.getElementById('coachForm').classList.add('hidden');
+      document.getElementById(formId).classList.remove('hidden');
+    }
+
+    function addPlayer() {
+      const name = document.getElementById('pName').value;
+      const phone = document.getElementById('pPhone').value;
+      const days = document.getElementById('pDays').value;
+
+      if(!name || !days) {
+        alert('يرجى كتابة اسم اللاعب ومدة الاشتراك');
+        return;
+      }
+
+      players.push({ name, phone, days });
+      renderPlayers();
+      alert('تمت إضافة اللاعب بنجاح!');
+
+      document.getElementById('pName').value = '';
+      document.getElementById('pPhone').value = '';
+      document.getElementById('pDays').value = '';
+      document.getElementById('playerForm').classList.add('hidden');
+    }
+
+    function addCoach() {
+      alert('تمت إضافة المدرب بنجاح!');
+      document.getElementById('coachForm').classList.add('hidden');
+    }
+
+    function renderPlayers() {
+      const list = document.getElementById('playersList');
+      list.innerHTML = '';
+      players.forEach(p => {
+        list.innerHTML += `<div class="list-item"><span>🏃‍♂️ ${p.name}</span> <span class="badge">${p.days} يوم</span></div>`;
+      });
     }
 
     function logout() {

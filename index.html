@@ -1,4 +1,103 @@
-<!doctype html>
+<!<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>أكاديمية اليوفي</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #121212; color: #fff; margin: 0; padding: 20px; text-align: center; }
+    .card { background: #1e1e1e; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; }
+    input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #222; color: #fff; }
+    button { background: #e2b93b; color: #000; border: none; padding: 12px 24px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 95%; margin-top: 10px; }
+    .hidden { display: none; }
+    .badge { background: #1b4332; color: #4ea8de; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- شاشة تسجيل الدخول -->
+  <div id="loginSection" class="card">
+    <h2>أكاديمية اليوفي ⚽</h2>
+    <p>تسجيل الدخول للنظام</p>
+    <input type="text" id="username" placeholder="اسم المستخدم">
+    <input type="password" id="password" placeholder="كلمة المرور">
+    <button onclick="login()">دخول</button>
+    
+    <div style="margin-top: 20px; font-size: 12px; color: #888;">
+      <b>حسابات للتجربة:</b><br>
+      الأدمن: admin / 123<br>
+      المدرب: coach / 123<br>
+      اللاعب: player / 123
+    </div>
+  </div>
+
+  <!-- لوحة الأدمن (أنتِ فقط) -->
+  <div id="adminView" class="card hidden">
+    <h2>لوحة التحكم الأعلى (الأدمن) 👑</h2>
+    <p>مرحباً بكِ! هذه الشاشة خاصة بكِ لإدارة الأكاديمية.</p>
+    <button style="background: #2a9d8f; color:#fff;">+ إضافة لاعب جديد</button>
+    <button style="background: #e76f51; color:#fff;">+ إضافة مدرب جديد</button>
+    <button style="background: #264653; color:#fff;">التقارير المالية والاشتراكات</button>
+    <br><br>
+    <button onclick="logout()" style="background:#444; color:#fff;">تسجيل الخروج</button>
+  </div>
+
+  <!-- واجهة المدرب -->
+  <div id="coachView" class="card hidden">
+    <h2>واجهة الكابتن/المدرب 📋</h2>
+    <p>تسجيل الحضور والغياب للتمارين اليومية</p>
+    <button style="background: #e2b93b;">تحضير تمارين اليوم</button>
+    <br><br>
+    <button onclick="logout()" style="background:#444; color:#fff;">تسجيل الخروج</button>
+  </div>
+
+  <!-- واجهة اللاعب -->
+  <div id="playerView" class="card hidden">
+    <h2>أكاديمية اليوفي ⚽</h2>
+    <div style="background: #113825; padding: 15px; border-radius: 12px; margin: 10px 0;">
+      <span class="badge">اشتراكك فعال</span>
+      <h3>مرحباً، محمد 👋</h3>
+      <p>المتبقي: 30 يوم</p>
+    </div>
+    <button style="background: #007aff; color:#fff;">تجديد الاشتراك عبر Apple Pay </button>
+    <br><br>
+    <button onclick="logout()" style="background:#444; color:#fff;">تسجيل الخروج</button>
+  </div>
+
+  <script>
+    function login() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+
+      if(user === 'admin' && pass === '123') {
+        showView('adminView');
+      } else if(user === 'coach' && pass === '123') {
+        showView('coachView');
+      } else if(user === 'player' && pass === '123') {
+        showView('playerView');
+      } else {
+        alert('بيانات الدخول غير صحيحة!');
+      }
+    }
+
+    function showView(viewId) {
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('adminView').classList.add('hidden');
+      document.getElementById('coachView').classList.add('hidden');
+      document.getElementById('playerView').classList.add('hidden');
+
+      document.getElementById(viewId).classList.remove('hidden');
+    }
+
+    function logout() {
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      showView('loginSection');
+    }
+  </script>
+</body>
+</html>
+doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
